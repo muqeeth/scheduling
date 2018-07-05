@@ -1,39 +1,11 @@
 // Mesh network
 digraph {
-	1
+	edge [color=green label=9]
 	2 -> 1
-	2
-	3
+	edge [color=red label=99]
 	2 -> 3
-	4
-	2 -> 4
-	5
-	2 -> 5
-	1
+	edge [color=red label=72]
 	3 -> 1
-	2
+	edge [color=green label=18]
 	3 -> 2
-	3
-	4
-	3 -> 4
-	5
-	3 -> 5
-	1
-	4 -> 1
-	2
-	4 -> 2
-	3
-	4 -> 3
-	4
-	5
-	4 -> 5
-	1
-	5 -> 1
-	2
-	5 -> 2
-	3
-	5 -> 3
-	4
-	5 -> 4
-	5
 }
