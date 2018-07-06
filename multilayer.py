@@ -21,7 +21,7 @@ def energy_val(Variables):
 		C[i]=random.randint(1,100)
 	return C
 
-def LpSolver(m,n,E):
+def LPSolver(m,n,E):
 
 	prob=LpProblem("Scheduling",LpMinimize)
 	
@@ -62,8 +62,42 @@ def LpSolver(m,n,E):
 
 	
 	return LpStatus[prob.status],X_Ans,E_next
+
+
+def multilayer_solver(k,layers):
+	E=0
+	X={}
+	r=0
+	for i in range(1,k):
+		s,var,E_next=LPSolver(layers[i-1],layers[i-1]+layers[i],E)
+		
+		for j in var.keys():
+			old_key=j
+			
+			s = list(j[1:])
+			s[0] = str(int(s[0])+r)
+			s[1] = str(int(s[1])+r)
+			if s[2]!='0':
+				s[2] = str(int(s[2])+r)
+			
+			new_key = j[:1]+"".join(s)
+			
+			var[new_key]=var.pop(old_key)
+		
+		r=r+layers[i-1]
+		
+		E=E_next
+		print var
+		print  
+		X.update(var)
+	return X
+		
+X=multilayer_solver(3,[1,2,3])
+#print X
+		
+
 	
-status,var,E=LpSolver(2,5,[5,5])
+'''status,var,E=LpSolver(2,5,[5,5])
 print status
 print var
-print E
+print E'''
