@@ -21,7 +21,7 @@ def energy_val(Variables):
 		C[i]=random.randint(1,100)
 	return C
 
-def LpSolver(m,n,E):
+def Lpsolver(m,n,E):
 
 	prob=LpProblem("Scheduling",LpMinimize)
 	
@@ -61,9 +61,9 @@ def LpSolver(m,n,E):
 		E_next.append(lpSum(C[i]*X_Ans[i] for i in Y.T[j]))
 
 	
-	return LpStatus[prob.status],X_Ans,E_next
+	return LpStatus[prob.status],X_Ans,C,E_next
 	
-status,var,E=LpSolver(2,5,[5,5])
-print status
-print var
-print E
+# status,var,C,E=Lpsolver(2,5,[10,10])
+# print status
+# print var
+# print E
