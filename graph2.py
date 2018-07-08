@@ -26,9 +26,9 @@ dot2 = Digraph(comment='Mesh network',format='png')
 # print status
 # print C
 # print d
-k = 3
-l = [1,2,3]
-X,Weights = multilayer_solver(k,l)
+k = 2
+l = [1,8]
+X,Weights,E = multilayer_solver(k,l)
 # print X,"\n"
 # print Weights
 n = sum(l)
@@ -59,18 +59,18 @@ n = sum(l)
 
 for i in range(1,n+1):
     for j in range(1,n+1):
-            r = Weights.get("x"+str(i)+str(j))
+            r = Weights.get("x"+'_'+str(i)+'_'+str(j))
             if(r!=None):
                 if(i!=j):
-                    dot.attr('edge',color='red',label = str(Weights["x"+str(i)+str(j)]))
+                    dot.attr('edge',color='red',label = str(Weights["x"+'_'+str(i)+'_'+str(j)]))
                     dot.edge(str(i),str(j))
 
 for i in X.keys():
     if(X[i]==1.0):
-        r = Weights.get("x"+str(i[1])+str(i[2]))
+        r = Weights.get("_".join(i.split('_')[:-1]))
         if(r!=None):
-            dot2.attr('edge',color='green',label = str(Weights["x"+str(i[1])+str(i[2])]))
-            dot2.edge(str(i[1]),str(i[2]))
+            dot2.attr('edge',color='green',label = str(Weights["_".join(i.split('_')[:-1])]))
+            dot2.edge(i.split('_')[1],i.split('_')[2])
 
 dot.render('mesh2.gv', view=True)
 dot2.render('meshclean.gv',view=True)
