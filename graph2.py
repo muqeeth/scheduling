@@ -26,8 +26,8 @@ dot2 = Digraph(comment='Mesh network',format='png')
 # print status
 # print C
 # print d
-k = 10
-l = [1,1,1,1,1,1,1,1,1,1]
+k = 3
+l = [1,2,3]
 X,Weights = multilayer_solver(k,l)
 # print X,"\n"
 # print Weights

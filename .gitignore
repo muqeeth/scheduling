@@ -1,5 +1,8 @@
 #images
 *.png
+#generated graphs
+*.gv
+
 sc2.py
 
 # Created by https://www.gitignore.io/api/python,windows,visualstudiocode
