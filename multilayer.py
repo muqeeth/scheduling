@@ -41,10 +41,11 @@ def LPSolver(m,n,E):
 	
 	#Getting and Updating Energies(C)
 	C,W=energy_val(X)
-	for i in X:
+	
+	for i in C.keys():
 		for j in range(1,m+1):
-			if i[3]==j:
-				C[i]+=E[j-1]
+			if i[3]==str(j) or (i[3]=='0' and i[2] == str(j)):
+				C[i]= C[i]+E[j-1]
 	
 	#Objective Function(Minimize C*X)
 	prob += lpSum(C[i]*X_vars[i] for i in X),"Objective"
@@ -73,16 +74,16 @@ def LPSolver(m,n,E):
 	
 	#Calculating Energies of nodes to transmit data to Access Point
 	E_next=[]
+	
 	for j in range(0,n-m):
 		E_next.append(lpSum(C[i]*X_Ans[i] for i in Y.T[j]))
-
 	
 	return LpStatus[prob.status],X_Ans,E_next,W
 
 
 def multilayer_solver(k,layers):
 	
-	E=0
+	E=[0]
 	X={}
 	Weights={}
 	r=0
@@ -128,10 +129,11 @@ def multilayer_solver(k,layers):
 		r=r+layers[i-1]
 		
 		E=E_next
+		print E
 		X.update(var)
 		Weights.update(W)
-	return X,Weights
+	return X,Weights,E
 		
-X,Weights=multilayer_solver(3,[1,2,3])
+X,Weights,E=multilayer_solver(3,[1,2,3])
 print X,"\n"
-print Weights
+#print Weights
