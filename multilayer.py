@@ -6,9 +6,9 @@ def decision_variables(m,n):
 	X=[]
 	for i in range(m+1,n+1):
 		for k in range(1,m+1):
-			X.append("x"+str(i)+str(k)+str(0))
+			X.append("x_"+str(i)+'_'+str(k)+'_'+str(0))
 			for j in range(m+1,n+1):
-				X.append("x"+str(i)+str(j)+str(k))
+				X.append("x_"+str(i)+'_'+str(j)+'_'+str(k))
 	
 	Q=asarray(X)
 	Y=Q.reshape((n-m),m*(n-m+1)).T
@@ -18,15 +18,20 @@ def decision_variables(m,n):
 def energy_val(Variables):
 	Energy_orig={}
 	for i in Variables:
-		Energy_orig[i[:3]]=random.randint(1,100)
-		if (i[1]==i[2]):
-			Energy_orig[i[:3]]=0
+		j=i.split('_')
+		j=j[0]+'_'+j[1]+'_'+j[2]
+		Energy_orig[j]=random.randint(1,100)
+		if (i.split('_')[1]==i.split('_')[2]):
+			Energy_orig[j]=0
 	Energy={}
 	for i in Variables:
-		if i[3]!='0':
-			Energy[i]=Energy_orig[i[:3]]+Energy_orig[i[0]+i[2:]]
+		j=i.split('_')
+		l=j[0]+'_'+j[1]+'_'+j[2]
+		k=j[0]+'_'+j[2]+'_'+j[3]
+		if i.split('_')[3]!='0':
+			Energy[i]=Energy_orig[l]+Energy_orig[k]
 		else:
-			Energy[i]=Energy_orig[i[:3]]
+			Energy[i]=Energy_orig[l]
 
 	return Energy,Energy_orig
 	
@@ -43,8 +48,9 @@ def LPSolver(m,n,E):
 	C,W=energy_val(X)
 	
 	for i in C.keys():
+		l=i.split('_')
 		for j in range(1,m+1):
-			if i[3]==str(j) or (i[3]=='0' and i[2] == str(j)):
+			if l[3]==str(j) or (l[3]=='0' and l[2] == str(j)):
 				C[i]= C[i]+E[j-1]
 	
 	#Objective Function(Minimize C*X)
@@ -56,12 +62,12 @@ def LPSolver(m,n,E):
 		
 	for k in range(0,m*(n-m+1)):
 		for j in Y[k]:
-			if (j[1]==j[2]):
+			if (j.split('_')[1]==j.split('_')[2]):
 				prob += X_vars[j]==0
 				
 	for k in range (1,m+1):
 		for j in range ((n-m+1)*(k-1)+1,(n-m+1)*k):
-			prob += lpSum(X_vars[i] for i in Y[j])-((n-m-1)*X_vars['x'+str(j-((n-m+1)*(k-1))+m)+str(k)+str(0)])<=0
+			prob += lpSum(X_vars[i] for i in Y[j])-((n-m-1)*X_vars['x'+'_'+str(j-((n-m+1)*(k-1))+m)+'_'+str(k)+'_0'])<=0
 			
 	#Solving
 	prob.solve()
@@ -94,35 +100,34 @@ def multilayer_solver(k,layers):
 		for j in var.keys():
 			old_key=j
 			
-			s = list(j[1:])
-			s[0] = str(int(s[0])+r)
+			s = j.split('_')
 			s[1] = str(int(s[1])+r)
-			if s[2]!='0':
-				s[2] = str(int(s[2])+r)
+			s[2] = str(int(s[2])+r)
+			if s[3]!='0':
+				s[3] = str(int(s[3])+r)
 			s.append('0')
-			new_key = j[:1]+"".join(s)
+			new_key = "_".join(s)
 			
 			var[new_key]=var.pop(old_key)
 			
 		for j in var.keys():
-			new_key=j[:-1]
+			new_key="_".join(j.split('_')[:-1])
 			var[new_key]=var.pop(j)
 		
 		for j in W.keys():
 			old_key=j
-			
-			s = list(j[1:])
-			s[0] = str(int(s[0])+r)
+		
+			s = j.split('_')
 			s[1] = str(int(s[1])+r)
+			s[2] = str(int(s[2])+r)
 			s.append('0')
 			
-			new_key = j[:1]+"".join(s)
+			new_key = "_".join(s)
 			
-			W[new_key]=W[old_key]
-			del W[old_key]
+			W[new_key]=W.pop(old_key)
 		
 		for j in W.keys():
-			new_key=j[:-1]
+			new_key="_".join(j.split('_')[:-1])
 			W[new_key]=W.pop(j)
 			
 		
@@ -134,6 +139,7 @@ def multilayer_solver(k,layers):
 		Weights.update(W)
 	return X,Weights,E
 		
-X,Weights,E=multilayer_solver(3,[1,2,3])
+X,Weights,E=multilayer_solver(2,[1,10])
 print X,"\n"
-#print Weights
+print Weights
+
