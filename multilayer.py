@@ -16,24 +16,26 @@ def decision_variables(m,n):
 	return X,Y
 	
 def energy_val(Variables):
-	Energy_orig={}
+	Energy_edges={}
 	for i in Variables:
 		j=i.split('_')
 		j=j[0]+'_'+j[1]+'_'+j[2]
-		Energy_orig[j]=random.randint(1,100)
+		Energy_edges[j]=random.randint(1,100)
 		if (i.split('_')[1]==i.split('_')[2]):
-			Energy_orig[j]=0
+			Energy_edges[j]=0
+			
 	Energy={}
 	for i in Variables:
 		j=i.split('_')
 		l=j[0]+'_'+j[1]+'_'+j[2]
 		k=j[0]+'_'+j[2]+'_'+j[3]
+		
 		if i.split('_')[3]!='0':
-			Energy[i]=Energy_orig[l]+Energy_orig[k]
+			Energy[i]=Energy_edges[l]+Energy_edges[k]
 		else:
-			Energy[i]=Energy_orig[l]
+			Energy[i]=Energy_edges[l]
 
-	return Energy,Energy_orig
+	return Energy,Energy_edges
 	
 def LPSolver(m,n,E):
 	
@@ -89,7 +91,7 @@ def LPSolver(m,n,E):
 
 def multilayer_solver(k,layers):
 	
-	E=[0]
+	E=[0]; Ener=[]
 	X={}
 	Weights={}
 	r=0
@@ -134,12 +136,13 @@ def multilayer_solver(k,layers):
 		r=r+layers[i-1]
 		
 		E=E_next
-		print E
+		Ener.extend(E)
 		X.update(var)
 		Weights.update(W)
-	return X,Weights,E
+	return X,Weights,Ener
 		
-X,Weights,E=multilayer_solver(2,[1,10])
-print X,"\n"
-print Weights
+#X,Weights,E=multilayer_solver(6,[1,10,10,10,10,10])
+#print "\n",X,"\n"
+#print Weights,"\n"
+#print E,"\n"
 
