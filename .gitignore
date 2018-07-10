@@ -1,7 +1,8 @@
 #images
 *.png
 #generated graphs
-*.gv
+mesh2.gv
+meshclean.gv
 
 sc2.py
 
