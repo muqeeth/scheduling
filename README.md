@@ -209,4 +209,8 @@ once the packages are successfully installed run scheduling.py file in the direc
 
 ### Generated files
 1. input.dot,output.dot,input.dot.png,ouput.dot.png.
+<<<<<<< HEAD
 2. Above dot files can be ran seperately to generate required formatted files. For example use `dot -Tpng input.dot -o outfile.png` to generate png files.
+=======
+2. Above dot files can be ran seperately to generate required formatted files. For example use `dot -Tpng input.dot -o outfile.png` to generate png files.
+>>>>>>> 65e51ebb6a542c2450b48da96879096efdd4c271
