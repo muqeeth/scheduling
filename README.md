@@ -22,14 +22,14 @@ Follow below terminal commands to install above mentioned python packages.
 4.`pip install pygraphviz` to install pygraphviz.
 
 ### Documentation
-1. We approach the problem solving two layers,one layer of m receiving nodes and other layer of n transmitting nodes. 
+1. We approach the problem solving two layers,one layer of m receiving nodes and other layer of n-m transmitting nodes. 
 2. Each node in a layer is allowed to communicate directly to anyone of receiving nodes or relay its data to receiving nodes    through only one node in its layer.
 3. We consider each node transmitting and receiving only a unit data.
-4. After solving transmitting layer we assign energy weights required by each node in the layer to transmit unit data to        layer below it.
+4. After solving transmitting layer we assign energy weights required by each node in the layer to transmit unit data to        manager layer.
 5. We solve layer by layer until we reach the top most layer.
 #### Decision variables
 1. We use `x_i_j_k` as notation for node communication from i to k via node j.If node directly communicates with manager        layer the value of k is 0. Decision variables with same i and j are maintained for uniformity in matrix.
-2. decision_variables function takes m(number of receiving nodes) and n(number of transmitting nodes) as input.
+2. decision_variables function takes m(number of receiving nodes) and n(total number of nodes(transmitting + receiving)) as  	input.
 3. We generate decision variables using for loop.
 ```
 def decision_variables(m,n):
@@ -60,7 +60,7 @@ def energy_val(Variables):
 		if (i.split('_')[1]==i.split('_')[2]):
 			Energy_edges[j]=0
  ```
-3. If node j is in receiving nodes then cost for that path is the value assigned using random method. If node j acts as relay    then we add energy node j takes to transmit to node k to previous value.
+3. If node j is in receiving nodes then cost for that path is the value assigned using random method. If node j acts as relay then we add energy node j takes to transmit to node k to previous cost.
 ```
 	Energy={}
 	for i in Variables:
@@ -148,7 +148,7 @@ def LPSolver(m,n,E):
 status,var,E_next,W=LPSolver(layers[i-1],layers[i-1]+layers[i],E)
 ```
 2. All E_next values are appended to Ener list.
-3. In weights and decision variables when the Lpsolver is called it returns keys which are present before so we need to add    number of nodes in previous layer for correct indexing.
+3. In weights and decision variables when the Lpsolver is called ,it returns keys which are present before so we need to add    number of nodes in previous layer for correct indexing.
 ```
 def multilayer_solver(k,layers):
 	
@@ -203,14 +203,45 @@ def multilayer_solver(k,layers):
 	return X,Weights,Ener
   ```
 #### Plot input and output 
+1. Once Weights of each edges and Energy of each node(energy node takes to communicate data to manager) are known from          return value of multilayer solver.We loop twice over n given nodes and check if key generated from two for loops is          present in Weights dict.If key is present we generate an edge with label as value of key in Weights dict.
+```
+for i in range(1,n+1):
+    for j in range(1,n+1):
+            r = Weights.get("x"+'_'+str(i)+'_'+str(j))
+            if(r!=None):
+                if(i!=j):
+                    dot.attr('edge',color='red',label = str(Weights["x"+'_'+str(i)+'_'+str(j)]))
+                    dot.edge(str(i),str(j))
+```
+2. For output we loop over the keys of decision variables `X`.If the value for specific key `x_i_j_k` is 1,then we make edge 	between node i and node j as green with label chosen from Weights dict with key as `x_i_j`.The edge between node j and 	    node k should also be green since it is an active edge.It is taken care as our output has `x_j_k_0` as 1.
+```
+for i in X.keys():
+    if(X[i]==1.0):
+        r = Weights.get("_".join(i.split('_')[:-1]))
+        if(r!=None):
+            dot2.attr('edge',color='green',label = str(Weights["_".join(i.split('_')[:-1])]))
+            dot2.edge(i.split('_')[1],i.split('_')[2])
+```
+3. Now we render files in format of png.
+```
+dot.render('input.dot', view=True)
+dot2.render('output.dot',view=True)
+```
+4. For layering we do similarly add edges. We loop over all layers and nodes in same layer are appended to list `a` and we      add as sub graph with all nodes in `a` with same rank.
+```
+A = nx.nx_agraph.to_agraph(G)
+p = 1
+for i in range(1,k+1):
+    a = []
+    for j in range(p,p+l[i-1]):
+        a.append(str(j))
+    A.add_subgraph(a,rank='same')
+    p = p+l[i-1]
+```
 
 ### Run
-once the packages are successfully installed run scheduling.py file in the directory.
+once the packages are successfully installed, run scheduling.py file in the directory.
 
 ### Generated files
 1. input.dot,output.dot,input.dot.png,ouput.dot.png.
-<<<<<<< HEAD
-2. Above dot files can be ran seperately to generate required formatted files. For example use `dot -Tpng input.dot -o outfile.png` to generate png files.
-=======
-2. Above dot files can be ran seperately to generate required formatted files. For example use `dot -Tpng input.dot -o outfile.png` to generate png files.
->>>>>>> 65e51ebb6a542c2450b48da96879096efdd4c271
+2. Above dot files can be ran seperately to generate required formatted files. For example use `dot -Tpng input.dot -o          outfile.png` to generate png files.
